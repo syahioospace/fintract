@@ -1,0 +1,37 @@
+# analysis_options.yaml
+#
+# This file controls Dart's static analysis — it's your first line of defense
+# against bugs and bad code before you even run the app.
+#
+# We extend Flutter's recommended rules, then add stricter ones on top.
+# In production teams, this file is non-negotiable and enforced in CI.
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  # Treat these as errors, not just warnings.
+  # This means your app will NOT compile if these rules are violated.
+  errors:
+    missing_required_param: error
+    missing_return: error
+    dead_code: warning
+
+  exclude:
+    # Exclude generated files from analysis — we don't own that code
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+linter:
+  rules:
+    # --- Code style ---
+    prefer_single_quotes: true          # Consistency: always 'single' not "double"
+    always_declare_return_types: true   # Every function must declare its return type
+    avoid_print: true                   # Use a logger, never print() in production
+
+    # --- Safety ---
+    avoid_dynamic_calls: true           # No .someMethod() on dynamic types
+    unawaited_futures: true             # You must await or explicitly discard Futures
+
+    # --- Flutter-specific ---
+    use_key_in_widget_constructors: true # Every widget must accept a Key
+    sized_box_for_whitespace: true       # SizedBox over empty Container for spacing
