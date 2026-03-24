@@ -6,6 +6,7 @@ abstract class AppRoutes {
   static const register = '/register';
   static const dashboard = '/dashboard';
   static const transactions = '/transactions';
+  static const addTransaction = '/add-transaction';
   static const settings = '/settings';
 }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../transactions/domain/entities/transaction.dart';
 import '../../../transactions/presentation/bloc/transaction_bloc.dart';
 import '../../../transactions/presentation/bloc/transaction_event.dart';
@@ -23,6 +25,19 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
+      floatingActionButton: FloatingActionButton(
+        //onPressed: () => context.push(AppRoutes.addTransaction),
+        onPressed: () async {
+          final bloc = context.read<TransactionBloc>();
+          await context.push(AppRoutes.addTransaction);
+          if (mounted) {
+            bloc.add(
+              const GetTransactionsRequested(),
+            );
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
       body: BlocBuilder<TransactionBloc, TransactionState>(
         builder: (context, state) {
           if (state is TransactionLoading) {
@@ -83,7 +98,10 @@ class _DashboardContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 24),
-        const Text('Recent Transactions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text(
+          'Recent Transactions',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 8),
         if (transactions.isEmpty)
           const Center(child: Text('No transactions yet.'))
@@ -145,12 +163,18 @@ class _SummaryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+            Text(
+              label,
+              style: TextStyle(color: color, fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 4),
-            Text('\$${amount.toStringAsFixed(2)}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          ]
-        )
-      )
+            Text(
+              '\$${amount.toStringAsFixed(2)}',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -166,14 +190,19 @@ class _TransactionTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: isIncome ? Colors.green.shade100 : Colors.red.shade100,
-        child: Icon(isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-          color: isIncome ? Colors.green : Colors.red),
+        child: Icon(
+          isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+          color: isIncome ? Colors.green : Colors.red,
+        ),
       ),
       title: Text(transaction.title),
       subtitle: Text(transaction.date.toLocal().toString().split(' ')[0]),
       trailing: Text(
         '${isIncome ? '+' : '-'}\$${transaction.amount.toStringAsFixed(2)}',
-        style: TextStyle(color: isIncome ? Colors.green : Colors.red, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          color: isIncome ? Colors.green : Colors.red,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

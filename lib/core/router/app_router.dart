@@ -6,6 +6,7 @@ import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/transactions/presentation/bloc/transaction_bloc.dart';
 
 import '../../features/transactions/presentation/pages/transactions_page.dart';
+import '../../features/transactions/presentation/pages/add_transaction_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 
 import '../../features/auth/presentation/bloc/auth_state.dart';
@@ -55,11 +56,20 @@ GoRouter createRouter(AuthNotifier authNotifier) {
         ),
       ),
       GoRoute(
+        path: AppRoutes.addTransaction,
+        //builder: (context, state) => BlocProvider(
+        //  create: (_) => getIt<TransactionBloc>(),
+        //  child: const AddTransactionPage(),
+        //)
+        builder: (context, state) => const AddTransactionPage(),
+      ),
+      GoRoute(
         path: AppRoutes.dashboard,
-        builder: (context, state) => BlocProvider(
-          create: (_) => getIt<TransactionBloc>(),
-          child: const DashboardPage(),
-        )
+        //builder: (context, state) => BlocProvider(
+        //  create: (_) => getIt<TransactionBloc>(),
+        //  child: const DashboardPage(),
+        //)
+        builder: (context, state) => const DashboardPage(),
       )
     ],
   );

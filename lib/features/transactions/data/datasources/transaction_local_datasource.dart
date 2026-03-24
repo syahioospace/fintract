@@ -7,7 +7,8 @@ abstract class TransactionLocalDataSource {
   Future<void> deleteTransaction(String id);
 }
 
-@Injectable(as: TransactionLocalDataSource)
+//@Injectable(as: TransactionLocalDataSource)
+@Singleton(as: TransactionLocalDataSource)
 class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
   final List<TransactionModel> _store = [
     TransactionModel(

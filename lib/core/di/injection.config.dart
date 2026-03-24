@@ -25,6 +25,8 @@ import 'package:fintrack/features/auth/domain/usecases/register_usecase.dart'
     as _i305;
 import 'package:fintrack/features/auth/presentation/bloc/auth_bloc.dart'
     as _i619;
+import 'package:fintrack/features/transactions/data/datasources/transaction_local_datasource.dart'
+    as _i259;
 import 'package:fintrack/features/transactions/data/datasources/transaction_remote_datasource.dart'
     as _i621;
 import 'package:fintrack/features/transactions/data/repositories/transaction_repository_impl.dart'
@@ -53,6 +55,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i361.Dio>(() => registerModule.dio);
     gh.singleton<_i90.NetworkInfo>(() => registerModule.networkInfo);
     gh.singleton<_i866.AuthNotifier>(() => registerModule.authNotifier);
+    gh.singleton<_i259.TransactionLocalDataSource>(
+      () => _i259.TransactionLocalDataSourceImpl(),
+    );
     gh.factory<_i621.TransactionRemoteDataSource>(
       () => _i621.TransactionRemoteDataSourceImpl(gh<_i361.Dio>()),
     );
@@ -67,8 +72,7 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i471.TransactionRepository>(
       () => _i172.TransactionRepositoryImpl(
-        remoteDataSource: gh<_i621.TransactionRemoteDataSource>(),
-        networkInfo: gh<_i90.NetworkInfo>(),
+        localDataSource: gh<_i259.TransactionLocalDataSource>(),
       ),
     );
     gh.factory<_i305.RegisterUseCase>(
