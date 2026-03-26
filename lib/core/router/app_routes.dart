@@ -7,7 +7,9 @@ abstract class AppRoutes {
   static const dashboard = '/dashboard';
   static const transactions = '/transactions';
   static const addTransaction = '/add-transaction';
+  static const editTransaction = '/edit-transaction';
   static const settings = '/settings';
+  static const Set<String> publicRoutes = {login, register};
 }
 
 //What this is:

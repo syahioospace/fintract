@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/usecases/get_transactions_usecase.dart';
 import '../../domain/usecases/add_transaction_usecase.dart';
+import '../../domain/usecases/update_transaction_usecase.dart';
 import '../../domain/usecases/delete_transaction_usecase.dart';
 import '../../../../core/usecases/usecase.dart';
 import 'transaction_event.dart';
@@ -11,15 +12,18 @@ import 'transaction_state.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final GetTransactionsUseCase getTransactionsUseCase;
   final AddTransactionUseCase addTransactionUseCase;
+  final UpdateTransactionUseCase updateTransactionUseCase;
   final DeleteTransactionUseCase deleteTransactionUseCase;
 
   TransactionBloc({
     required this.getTransactionsUseCase,
     required this.addTransactionUseCase,
     required this.deleteTransactionUseCase,
+    required this.updateTransactionUseCase,
   }) : super(const TransactionInitial()) {
     on<GetTransactionsRequested>(_onGetTransactions);
     on<AddTransactionRequested>(_onAddTransaction);
+    on<UpdateTransactionRequested>(_onUpdateTransaction);
     on<DeleteTransactionRequested>(_onDeleteTransaction);
   }
 
@@ -32,6 +36,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     result.fold(
       (failure) => emit(TransactionFailure(failure.message)),
       (transactions) => emit(TransactionLoaded(transactions)),
+    );
+  }
+
+  Future<void> _onUpdateTransaction(
+    UpdateTransactionRequested event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(const TransactionLoading());
+    final result = await updateTransactionUseCase(
+      UpdateTransactionParams(event.transaction),
+    );
+    result.fold(
+      (failure) => emit(TransactionFailure(failure.message)),
+      (_) => add(const GetTransactionsRequested()),
     );
   }
 

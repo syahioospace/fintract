@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/router/auth_guard.dart';
 import '../../../transactions/domain/entities/transaction.dart';
 import '../../../transactions/presentation/bloc/transaction_bloc.dart';
 import '../../../transactions/presentation/bloc/transaction_event.dart';
 import '../../../transactions/presentation/bloc/transaction_state.dart';
+import '../../../../core/theme/theme_cubit.dart';
+import '../../../../core/di/injection.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -24,16 +27,26 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
+      appBar: AppBar(
+        title: const Text('Dashboard'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.brightness_6),
+            onPressed: () => context.read<ThemeCubit>().toggle(),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => getIt<AuthNotifier>().logout(),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         //onPressed: () => context.push(AppRoutes.addTransaction),
         onPressed: () async {
           final bloc = context.read<TransactionBloc>();
           await context.push(AppRoutes.addTransaction);
           if (mounted) {
-            bloc.add(
-              const GetTransactionsRequested(),
-            );
+            bloc.add(const GetTransactionsRequested());
           }
         },
         child: const Icon(Icons.add),
@@ -106,7 +119,30 @@ class _DashboardContent extends StatelessWidget {
         if (transactions.isEmpty)
           const Center(child: Text('No transactions yet.'))
         else
-          ...transactions.map((t) => _TransactionTile(transaction: t)),
+          ...transactions.map(
+            (t) => Dismissible(
+              key: Key(t.id),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                color: Colors.red,
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+              onDismissed: (_) {
+                context.read<TransactionBloc>().add(
+                  DeleteTransactionRequested(t.id),
+                );
+              },
+              child: GestureDetector(
+                onTap: () => context.push(
+                  AppRoutes.editTransaction,
+                  extra: t,
+                ),
+                child: _TransactionTile(transaction: t),
+              )
+            ),
+          ),
       ],
     );
   }

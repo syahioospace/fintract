@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/transactions/presentation/bloc/transaction_bloc.dart';
+import '../../features/transactions/domain/entities/transaction.dart';
 
 import '../../features/transactions/presentation/pages/transactions_page.dart';
 import '../../features/transactions/presentation/pages/add_transaction_page.dart';
@@ -22,10 +23,13 @@ GoRouter createRouter(AuthNotifier authNotifier) {
     refreshListenable: authNotifier,
     redirect: (context, state) {
       final isAuthenticated = authNotifier.isAuthenticated;
-      final isOnLogin = state.matchedLocation == AppRoutes.login;
+      //final isOnLogin = state.matchedLocation == AppRoutes.login;
+      final isPublic = AppRoutes.publicRoutes.contains(state.matchedLocation);
 
-      if (!isAuthenticated && !isOnLogin) return AppRoutes.login;
-      if (isAuthenticated && isOnLogin) return AppRoutes.dashboard;
+      //if (!isAuthenticated && !isOnLogin) return AppRoutes.login;
+      //if (isAuthenticated && isOnLogin) return AppRoutes.dashboard;
+      if (!isAuthenticated && !isPublic) return AppRoutes.login;
+      if (isAuthenticated && isPublic) return AppRoutes.dashboard;
       return null;
     },
     routes: [
@@ -64,13 +68,20 @@ GoRouter createRouter(AuthNotifier authNotifier) {
         builder: (context, state) => const AddTransactionPage(),
       ),
       GoRoute(
+        path: AppRoutes.editTransaction,
+        builder: (context, state) {
+          final transaction = state.extra as Transaction;
+          return AddTransactionPage(transaction: transaction);
+        },
+      ),
+      GoRoute(
         path: AppRoutes.dashboard,
         //builder: (context, state) => BlocProvider(
         //  create: (_) => getIt<TransactionBloc>(),
         //  child: const DashboardPage(),
         //)
         builder: (context, state) => const DashboardPage(),
-      )
+      ),
     ],
   );
 }

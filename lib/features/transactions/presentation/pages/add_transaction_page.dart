@@ -7,7 +7,9 @@ import '../bloc/transaction_event.dart';
 import '../bloc/transaction_state.dart';
 
 class AddTransactionPage extends StatefulWidget {
-  const AddTransactionPage({super.key});
+  const AddTransactionPage({super.key, this.transaction});
+
+  final Transaction? transaction;
 
   @override
   State<AddTransactionPage> createState() => _AddTransactionPageState();
@@ -21,6 +23,18 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   TransactionType _selectedType = TransactionType.expense;
   DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.transaction != null) {
+      _titleController.text = widget.transaction!.title;
+      _amountController.text = widget.transaction!.amount.toString();
+      _selectedType = widget.transaction!.type;
+      _selectedDate = widget.transaction!.date;
+      _noteController.text = widget.transaction!.note ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -46,7 +60,10 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     //if (!_formKey.currentState!.validate()) return;
 
     final transaction = Transaction(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      //id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id:
+          widget.transaction?.id ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       title: _titleController.text.trim(),
       amount: double.parse(_amountController.text.trim()),
       type: _selectedType,
@@ -56,7 +73,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
           : _noteController.text.trim(),
     );
 
-    context.read<TransactionBloc>().add(AddTransactionRequested(transaction));
+    if (widget.transaction == null) {
+      context.read<TransactionBloc>().add(AddTransactionRequested(transaction));
+    } else {
+      context.read<TransactionBloc>().add(
+        UpdateTransactionRequested(transaction),
+      );
+    }
     //Navigator.of(context).pop();
   }
 
@@ -74,7 +97,11 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Add Transaction')),
+        appBar: AppBar(
+          title: Text(
+            widget.transaction == null ? 'Add Transaction' : 'Edit Transcation',
+          ),
+        ),
         body: Form(
           key: _formKey,
           child: ListView(
@@ -126,7 +153,10 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 decoration: const InputDecoration(labelText: 'Note (optional)'),
               ),
               const SizedBox(height: 32),
-              ElevatedButton(onPressed: _submit, child: const Text('Add')),
+              ElevatedButton(
+                onPressed: _submit,
+                child: Text(widget.transaction == null ? 'Add' : 'Save'),
+              ),
             ],
           ),
         ),

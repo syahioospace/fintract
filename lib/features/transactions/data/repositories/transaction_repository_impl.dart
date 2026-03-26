@@ -68,6 +68,27 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
+  Future<Either<Failure, Transaction>> updateTransaction(
+    Transaction transaction,
+  ) async {
+    try {
+      final model = await localDataSource.updateTransaction(
+        TransactionModel(
+          id: transaction.id,
+          title: transaction.title,
+          amount: transaction.amount,
+          type: transaction.type.name,
+          date: transaction.date,
+          note: transaction.note,
+        ),
+      );
+      return Right(model.toEntity());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> deleteTransaction(String id) async {
     //if (!await networkInfo.isConnected) {
     //  return const Left(NetworkFailure());

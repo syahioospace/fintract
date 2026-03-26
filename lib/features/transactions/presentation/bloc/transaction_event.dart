@@ -13,6 +13,11 @@ class AddTransactionRequested extends TransactionEvent {
   const AddTransactionRequested(this.transaction);
 }
 
+class UpdateTransactionRequested extends TransactionEvent {
+  final Transaction transaction;
+  const UpdateTransactionRequested(this.transaction);
+}
+
 class DeleteTransactionRequested extends TransactionEvent {
   final String id;
   const DeleteTransactionRequested(this.id);

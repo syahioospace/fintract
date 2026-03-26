@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
 import 'core/router/auth_guard.dart';
+import 'core/theme/theme_cubit.dart';
 import 'features/transactions/presentation/bloc/transaction_bloc.dart';
 
 class App extends StatelessWidget {
@@ -10,12 +11,22 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<TransactionBloc>(),
-      child: MaterialApp.router(
-        title: 'FinTrack',
-        debugShowCheckedModeBanner: false,
-        routerConfig: createRouter(getIt<AuthNotifier>()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<TransactionBloc>()),
+        BlocProvider(create: (_) => getIt<ThemeCubit>()),
+      ],
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp.router(
+            title: 'FinTrack',
+            debugShowCheckedModeBanner: false,
+            themeMode: themeMode,
+            theme: ThemeData.light(useMaterial3: true),
+            darkTheme: ThemeData.dark(useMaterial3: true), 
+            routerConfig: createRouter(getIt<AuthNotifier>()),
+          );
+        },
       ),
     );
   }

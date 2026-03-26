@@ -7,5 +7,9 @@ abstract class TransactionRepository {
 
   Future<Either<Failure, Transaction>> addTransaction(Transaction transaction);
 
+  Future<Either<Failure, Transaction>> updateTransaction(
+    Transaction transaction,
+  );
+
   Future<Either<Failure, void>> deleteTransaction(String id);
 }
