@@ -54,6 +54,18 @@ class $TransactionItemsTable extends TransactionItems
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('other'),
+  );
   static const VerificationMeta _noteMeta = const VerificationMeta('note');
   @override
   late final GeneratedColumn<String> note = GeneratedColumn<String>(
@@ -64,7 +76,15 @@ class $TransactionItemsTable extends TransactionItems
     requiredDuringInsert: false,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, title, amount, type, date, note];
+  List<GeneratedColumn> get $columns => [
+    id,
+    title,
+    amount,
+    type,
+    date,
+    category,
+    note,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -114,6 +134,12 @@ class $TransactionItemsTable extends TransactionItems
     } else if (isInserting) {
       context.missing(_dateMeta);
     }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
     if (data.containsKey('note')) {
       context.handle(
         _noteMeta,
@@ -149,6 +175,10 @@ class $TransactionItemsTable extends TransactionItems
         DriftSqlType.dateTime,
         data['${effectivePrefix}date'],
       )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
       note: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}note'],
@@ -168,6 +198,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
   final double amount;
   final String type;
   final DateTime date;
+  final String category;
   final String? note;
   const TransactionItem({
     required this.id,
@@ -175,6 +206,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
     required this.amount,
     required this.type,
     required this.date,
+    required this.category,
     this.note,
   });
   @override
@@ -185,6 +217,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
     map['amount'] = Variable<double>(amount);
     map['type'] = Variable<String>(type);
     map['date'] = Variable<DateTime>(date);
+    map['category'] = Variable<String>(category);
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
     }
@@ -198,6 +231,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
       amount: Value(amount),
       type: Value(type),
       date: Value(date),
+      category: Value(category),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
     );
   }
@@ -213,6 +247,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
       amount: serializer.fromJson<double>(json['amount']),
       type: serializer.fromJson<String>(json['type']),
       date: serializer.fromJson<DateTime>(json['date']),
+      category: serializer.fromJson<String>(json['category']),
       note: serializer.fromJson<String?>(json['note']),
     );
   }
@@ -225,6 +260,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
       'amount': serializer.toJson<double>(amount),
       'type': serializer.toJson<String>(type),
       'date': serializer.toJson<DateTime>(date),
+      'category': serializer.toJson<String>(category),
       'note': serializer.toJson<String?>(note),
     };
   }
@@ -235,6 +271,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
     double? amount,
     String? type,
     DateTime? date,
+    String? category,
     Value<String?> note = const Value.absent(),
   }) => TransactionItem(
     id: id ?? this.id,
@@ -242,6 +279,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
     amount: amount ?? this.amount,
     type: type ?? this.type,
     date: date ?? this.date,
+    category: category ?? this.category,
     note: note.present ? note.value : this.note,
   );
   TransactionItem copyWithCompanion(TransactionItemsCompanion data) {
@@ -251,6 +289,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
       amount: data.amount.present ? data.amount.value : this.amount,
       type: data.type.present ? data.type.value : this.type,
       date: data.date.present ? data.date.value : this.date,
+      category: data.category.present ? data.category.value : this.category,
       note: data.note.present ? data.note.value : this.note,
     );
   }
@@ -263,13 +302,15 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
           ..write('amount: $amount, ')
           ..write('type: $type, ')
           ..write('date: $date, ')
+          ..write('category: $category, ')
           ..write('note: $note')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, title, amount, type, date, note);
+  int get hashCode =>
+      Object.hash(id, title, amount, type, date, category, note);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -279,6 +320,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
           other.amount == this.amount &&
           other.type == this.type &&
           other.date == this.date &&
+          other.category == this.category &&
           other.note == this.note);
 }
 
@@ -288,6 +330,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
   final Value<double> amount;
   final Value<String> type;
   final Value<DateTime> date;
+  final Value<String> category;
   final Value<String?> note;
   final Value<int> rowid;
   const TransactionItemsCompanion({
@@ -296,6 +339,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     this.amount = const Value.absent(),
     this.type = const Value.absent(),
     this.date = const Value.absent(),
+    this.category = const Value.absent(),
     this.note = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -305,6 +349,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     required double amount,
     required String type,
     required DateTime date,
+    this.category = const Value.absent(),
     this.note = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -318,6 +363,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     Expression<double>? amount,
     Expression<String>? type,
     Expression<DateTime>? date,
+    Expression<String>? category,
     Expression<String>? note,
     Expression<int>? rowid,
   }) {
@@ -327,6 +373,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
       if (amount != null) 'amount': amount,
       if (type != null) 'type': type,
       if (date != null) 'date': date,
+      if (category != null) 'category': category,
       if (note != null) 'note': note,
       if (rowid != null) 'rowid': rowid,
     });
@@ -338,6 +385,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     Value<double>? amount,
     Value<String>? type,
     Value<DateTime>? date,
+    Value<String>? category,
     Value<String?>? note,
     Value<int>? rowid,
   }) {
@@ -347,6 +395,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
       amount: amount ?? this.amount,
       type: type ?? this.type,
       date: date ?? this.date,
+      category: category ?? this.category,
       note: note ?? this.note,
       rowid: rowid ?? this.rowid,
     );
@@ -370,6 +419,9 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);
     }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
     if (note.present) {
       map['note'] = Variable<String>(note.value);
     }
@@ -387,6 +439,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
           ..write('amount: $amount, ')
           ..write('type: $type, ')
           ..write('date: $date, ')
+          ..write('category: $category, ')
           ..write('note: $note, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -414,6 +467,7 @@ typedef $$TransactionItemsTableCreateCompanionBuilder =
       required double amount,
       required String type,
       required DateTime date,
+      Value<String> category,
       Value<String?> note,
       Value<int> rowid,
     });
@@ -424,6 +478,7 @@ typedef $$TransactionItemsTableUpdateCompanionBuilder =
       Value<double> amount,
       Value<String> type,
       Value<DateTime> date,
+      Value<String> category,
       Value<String?> note,
       Value<int> rowid,
     });
@@ -459,6 +514,11 @@ class $$TransactionItemsTableFilterComposer
 
   ColumnFilters<DateTime> get date => $composableBuilder(
     column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -502,6 +562,11 @@ class $$TransactionItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get note => $composableBuilder(
     column: $table.note,
     builder: (column) => ColumnOrderings(column),
@@ -531,6 +596,9 @@ class $$TransactionItemsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get date =>
       $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
 
   GeneratedColumn<String> get note =>
       $composableBuilder(column: $table.note, builder: (column) => column);
@@ -578,6 +646,7 @@ class $$TransactionItemsTableTableManager
                 Value<double> amount = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<DateTime> date = const Value.absent(),
+                Value<String> category = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TransactionItemsCompanion(
@@ -586,6 +655,7 @@ class $$TransactionItemsTableTableManager
                 amount: amount,
                 type: type,
                 date: date,
+                category: category,
                 note: note,
                 rowid: rowid,
               ),
@@ -596,6 +666,7 @@ class $$TransactionItemsTableTableManager
                 required double amount,
                 required String type,
                 required DateTime date,
+                Value<String> category = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TransactionItemsCompanion.insert(
@@ -604,6 +675,7 @@ class $$TransactionItemsTableTableManager
                 amount: amount,
                 type: type,
                 date: date,
+                category: category,
                 note: note,
                 rowid: rowid,
               ),

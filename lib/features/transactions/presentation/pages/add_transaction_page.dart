@@ -21,6 +21,8 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
 
+  Category _selectedCategory = Category.other;
+
   TransactionType _selectedType = TransactionType.expense;
   DateTime _selectedDate = DateTime.now();
 
@@ -32,6 +34,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
       _amountController.text = widget.transaction!.amount.toString();
       _selectedType = widget.transaction!.type;
       _selectedDate = widget.transaction!.date;
+      _selectedCategory = widget.transaction!.category;
       _noteController.text = widget.transaction!.note ?? '';
     }
   }
@@ -68,6 +71,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
       amount: double.parse(_amountController.text.trim()),
       type: _selectedType,
       date: _selectedDate,
+      category: _selectedCategory,
       note: _noteController.text.trim().isEmpty
           ? null
           : _noteController.text.trim(),
@@ -136,6 +140,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                     .map((t) => DropdownMenuItem(value: t, child: Text(t.name)))
                     .toList(),
                 onChanged: (v) => setState(() => _selectedType = v!),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<Category>(
+                initialValue: _selectedCategory,
+                decoration: const InputDecoration(labelText: 'Category'),
+                items: Category.values.map((c) => DropdownMenuItem(value: c, child: Text(c.name))).toList(),
+                onChanged: (v) => setState(() => _selectedCategory = v!),
               ),
               const SizedBox(height: 16),
               ListTile(

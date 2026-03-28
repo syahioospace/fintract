@@ -14,6 +14,7 @@ _$TransactionModelImpl _$$TransactionModelImplFromJson(
   amount: (json['amount'] as num).toDouble(),
   type: json['type'] as String,
   date: DateTime.parse(json['date'] as String),
+  category: json['category'] as String,
   note: json['note'] as String?,
 );
 
@@ -25,5 +26,6 @@ Map<String, dynamic> _$$TransactionModelImplToJson(
   'amount': instance.amount,
   'type': instance.type,
   'date': instance.date.toIso8601String(),
+  'category': instance.category,
   'note': instance.note,
 };

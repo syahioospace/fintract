@@ -58,6 +58,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
           amount: transaction.amount,
           type: transaction.type.name,
           date: transaction.date,
+          category: transaction.category.name,
           note: transaction.note,
         ),
       );
@@ -79,6 +80,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
           amount: transaction.amount,
           type: transaction.type.name,
           date: transaction.date,
+          category: transaction.category.name,
           note: transaction.note,
         ),
       );

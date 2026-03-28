@@ -26,6 +26,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
             id: row.id,
             title: row.title,
             amount: row.amount,
+            category: row.category,
             type: row.type,
             date: row.date,
             note: row.note,
@@ -45,6 +46,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
             amount: Value(model.amount),
             type: Value(model.type),
             date: Value(model.date),
+            category: Value(model.category),
             note: Value(model.note),
           ),
         );
@@ -61,6 +63,7 @@ class TransactionLocalDataSourceImpl implements TransactionLocalDataSource {
         amount: Value(model.amount),
         type: Value(model.type),
         date: Value(model.date),
+        category: Value(model.category),
         note: Value(model.note),
       ),
     );

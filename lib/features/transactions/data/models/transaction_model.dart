@@ -12,6 +12,7 @@ class TransactionModel with _$TransactionModel {
     required double amount,
     required String type,
     required DateTime date,
+    required String category,
     String? note,
   }) = _TransactionModel;
 
@@ -26,6 +27,10 @@ extension TransactionModelX on TransactionModel {
     amount: amount,
     type: type == 'income' ? TransactionType.income : TransactionType.expense,
     date: date,
+    category: Category.values.firstWhere(
+      (c) => c.name == category,
+      orElse: () => Category.other,
+    ),
     note: note,
   );
 }

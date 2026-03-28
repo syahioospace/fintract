@@ -69,20 +69,33 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
-class _DashboardContent extends StatelessWidget {
+class _DashboardContent extends StatefulWidget {
   const _DashboardContent({required this.transactions});
 
   final List<Transaction> transactions;
 
-  double get _totalIncome => transactions
+  @override
+  State<_DashboardContent> createState() => _DashboardContentState();
+}
+
+class _DashboardContentState extends State<_DashboardContent> {
+  Category? _selectedCategory;
+
+  double get _totalIncome => widget.transactions
       .where((t) => t.type == TransactionType.income)
       .fold(0, (sum, t) => sum + t.amount);
 
-  double get _totalExpense => transactions
+  double get _totalExpense => widget.transactions
       .where((t) => t.type == TransactionType.expense)
       .fold(0, (sum, t) => sum + t.amount);
 
   double get _balance => _totalIncome - _totalExpense;
+
+  List<Transaction> get _filtered => _selectedCategory == null
+      ? widget.transactions
+      : widget.transactions
+            .where((t) => t.category == _selectedCategory)
+            .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -116,10 +129,34 @@ class _DashboardContent extends StatelessWidget {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        if (transactions.isEmpty)
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              FilterChip(
+                label: const Text('All'),
+                selected: _selectedCategory == null,
+                onSelected: (_) => setState(() => _selectedCategory = null),
+              ),
+              const SizedBox(width: 8),
+              ...Category.values.map(
+                (c) => Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(c.name),
+                    selected: _selectedCategory == c,
+                    onSelected: (_) => setState(() => _selectedCategory = c),
+                  ),
+                ),
+              ),
+            ]
+          )
+        ),
+        const SizedBox(height: 8),
+        if (_filtered.isEmpty)
           const Center(child: Text('No transactions yet.'))
         else
-          ...transactions.map(
+          ..._filtered.map(
             (t) => Dismissible(
               key: Key(t.id),
               direction: DismissDirection.endToStart,
@@ -135,12 +172,9 @@ class _DashboardContent extends StatelessWidget {
                 );
               },
               child: GestureDetector(
-                onTap: () => context.push(
-                  AppRoutes.editTransaction,
-                  extra: t,
-                ),
+                onTap: () => context.push(AppRoutes.editTransaction, extra: t),
                 child: _TransactionTile(transaction: t),
-              )
+              ),
             ),
           ),
       ],
@@ -232,7 +266,10 @@ class _TransactionTile extends StatelessWidget {
         ),
       ),
       title: Text(transaction.title),
-      subtitle: Text(transaction.date.toLocal().toString().split(' ')[0]),
+      //subtitle: Text(transaction.date.toLocal().toString().split(' ')[0]),
+      subtitle: Text(
+        '${transaction.date.toLocal().toString().split(' ')[0]} · ${transaction.category.name}',
+      ),
       trailing: Text(
         '${isIncome ? '+' : '-'}\$${transaction.amount.toStringAsFixed(2)}',
         style: TextStyle(

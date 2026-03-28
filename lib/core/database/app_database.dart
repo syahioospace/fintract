@@ -13,6 +13,7 @@ class TransactionItems extends Table {
   RealColumn get amount => real()();
   TextColumn get type => text()();
   DateTimeColumn get date => dateTime()();
+  TextColumn get category => text().withDefault(const Constant('other'))();
   TextColumn get note => text().nullable()();
 
   @override

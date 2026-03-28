@@ -26,6 +26,7 @@ mixin _$TransactionModel {
   double get amount => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
   DateTime get date => throw _privateConstructorUsedError;
+  String get category => throw _privateConstructorUsedError;
   String? get note => throw _privateConstructorUsedError;
 
   /// Serializes this TransactionModel to a JSON map.
@@ -51,6 +52,7 @@ abstract class $TransactionModelCopyWith<$Res> {
     double amount,
     String type,
     DateTime date,
+    String category,
     String? note,
   });
 }
@@ -75,6 +77,7 @@ class _$TransactionModelCopyWithImpl<$Res, $Val extends TransactionModel>
     Object? amount = null,
     Object? type = null,
     Object? date = null,
+    Object? category = null,
     Object? note = freezed,
   }) {
     return _then(
@@ -99,6 +102,10 @@ class _$TransactionModelCopyWithImpl<$Res, $Val extends TransactionModel>
                 ? _value.date
                 : date // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            category: null == category
+                ? _value.category
+                : category // ignore: cast_nullable_to_non_nullable
+                      as String,
             note: freezed == note
                 ? _value.note
                 : note // ignore: cast_nullable_to_non_nullable
@@ -124,6 +131,7 @@ abstract class _$$TransactionModelImplCopyWith<$Res>
     double amount,
     String type,
     DateTime date,
+    String category,
     String? note,
   });
 }
@@ -147,6 +155,7 @@ class __$$TransactionModelImplCopyWithImpl<$Res>
     Object? amount = null,
     Object? type = null,
     Object? date = null,
+    Object? category = null,
     Object? note = freezed,
   }) {
     return _then(
@@ -171,6 +180,10 @@ class __$$TransactionModelImplCopyWithImpl<$Res>
             ? _value.date
             : date // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        category: null == category
+            ? _value.category
+            : category // ignore: cast_nullable_to_non_nullable
+                  as String,
         note: freezed == note
             ? _value.note
             : note // ignore: cast_nullable_to_non_nullable
@@ -189,6 +202,7 @@ class _$TransactionModelImpl implements _TransactionModel {
     required this.amount,
     required this.type,
     required this.date,
+    required this.category,
     this.note,
   });
 
@@ -206,11 +220,13 @@ class _$TransactionModelImpl implements _TransactionModel {
   @override
   final DateTime date;
   @override
+  final String category;
+  @override
   final String? note;
 
   @override
   String toString() {
-    return 'TransactionModel(id: $id, title: $title, amount: $amount, type: $type, date: $date, note: $note)';
+    return 'TransactionModel(id: $id, title: $title, amount: $amount, type: $type, date: $date, category: $category, note: $note)';
   }
 
   @override
@@ -223,13 +239,15 @@ class _$TransactionModelImpl implements _TransactionModel {
             (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.date, date) || other.date == date) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
             (identical(other.note, note) || other.note == note));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, title, amount, type, date, note);
+      Object.hash(runtimeType, id, title, amount, type, date, category, note);
 
   /// Create a copy of TransactionModel
   /// with the given fields replaced by the non-null parameter values.
@@ -255,6 +273,7 @@ abstract class _TransactionModel implements TransactionModel {
     required final double amount,
     required final String type,
     required final DateTime date,
+    required final String category,
     final String? note,
   }) = _$TransactionModelImpl;
 
@@ -271,6 +290,8 @@ abstract class _TransactionModel implements TransactionModel {
   String get type;
   @override
   DateTime get date;
+  @override
+  String get category;
   @override
   String? get note;
 

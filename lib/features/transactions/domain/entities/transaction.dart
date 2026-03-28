@@ -1,11 +1,14 @@
 enum TransactionType { income, expense }
 
+enum Category { food, transport, salary, entertainment, health, other }
+
 class Transaction {
   final String id;
   final String title;
   final double amount;
   final TransactionType type;
   final DateTime date;
+  final Category category;
   final String? note;
 
   const Transaction({
@@ -14,6 +17,7 @@ class Transaction {
     required this.amount,
     required this.type,
     required this.date,
+    required this.category,
     this.note,
   });
 }
