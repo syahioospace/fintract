@@ -8,6 +8,7 @@ abstract class AppRoutes {
   static const transactions = '/transactions';
   static const addTransaction = '/add-transaction';
   static const editTransaction = '/edit-transaction';
+  static const budget = '/budget';
   static const settings = '/settings';
   static const Set<String> publicRoutes = {login, register};
 }

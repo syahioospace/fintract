@@ -20,13 +20,21 @@ class TransactionItems extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [TransactionItems])
+class BudgetItems extends Table {
+  TextColumn get category => text()();
+  RealColumn get limitAmount => real()();
+
+  @override
+  Set<Column> get primaryKey => {category};
+}
+
+@DriftDatabase(tables: [TransactionItems, BudgetItems])
 @singleton
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 }
 
 LazyDatabase _openConnection() {

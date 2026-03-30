@@ -38,6 +38,10 @@ class _DashboardPageState extends State<DashboardPage> {
             icon: const Icon(Icons.logout),
             onPressed: () => getIt<AuthNotifier>().logout(),
           ),
+          IconButton(
+            icon: const Icon(Icons.account_balance_wallet),
+            onPressed: () => context.push(AppRoutes.budget),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

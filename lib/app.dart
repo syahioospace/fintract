@@ -5,6 +5,7 @@ import 'core/router/app_router.dart';
 import 'core/router/auth_guard.dart';
 import 'core/theme/theme_cubit.dart';
 import 'features/transactions/presentation/bloc/transaction_bloc.dart';
+import 'features/budget/presentation/cubit/budget_cubit.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -15,6 +16,7 @@ class App extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => getIt<TransactionBloc>()),
         BlocProvider(create: (_) => getIt<ThemeCubit>()),
+        BlocProvider(create: (_) => getIt<BudgetCubit>()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
@@ -23,7 +25,7 @@ class App extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             themeMode: themeMode,
             theme: ThemeData.light(useMaterial3: true),
-            darkTheme: ThemeData.dark(useMaterial3: true), 
+            darkTheme: ThemeData.dark(useMaterial3: true),
             routerConfig: createRouter(getIt<AuthNotifier>()),
           );
         },

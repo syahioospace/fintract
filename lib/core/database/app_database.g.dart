@@ -447,17 +447,243 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
   }
 }
 
+class $BudgetItemsTable extends BudgetItems
+    with TableInfo<$BudgetItemsTable, BudgetItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BudgetItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _limitAmountMeta = const VerificationMeta(
+    'limitAmount',
+  );
+  @override
+  late final GeneratedColumn<double> limitAmount = GeneratedColumn<double>(
+    'limit_amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [category, limitAmount];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'budget_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BudgetItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('limit_amount')) {
+      context.handle(
+        _limitAmountMeta,
+        limitAmount.isAcceptableOrUnknown(
+          data['limit_amount']!,
+          _limitAmountMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_limitAmountMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {category};
+  @override
+  BudgetItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BudgetItem(
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      limitAmount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}limit_amount'],
+      )!,
+    );
+  }
+
+  @override
+  $BudgetItemsTable createAlias(String alias) {
+    return $BudgetItemsTable(attachedDatabase, alias);
+  }
+}
+
+class BudgetItem extends DataClass implements Insertable<BudgetItem> {
+  final String category;
+  final double limitAmount;
+  const BudgetItem({required this.category, required this.limitAmount});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['category'] = Variable<String>(category);
+    map['limit_amount'] = Variable<double>(limitAmount);
+    return map;
+  }
+
+  BudgetItemsCompanion toCompanion(bool nullToAbsent) {
+    return BudgetItemsCompanion(
+      category: Value(category),
+      limitAmount: Value(limitAmount),
+    );
+  }
+
+  factory BudgetItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BudgetItem(
+      category: serializer.fromJson<String>(json['category']),
+      limitAmount: serializer.fromJson<double>(json['limitAmount']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'category': serializer.toJson<String>(category),
+      'limitAmount': serializer.toJson<double>(limitAmount),
+    };
+  }
+
+  BudgetItem copyWith({String? category, double? limitAmount}) => BudgetItem(
+    category: category ?? this.category,
+    limitAmount: limitAmount ?? this.limitAmount,
+  );
+  BudgetItem copyWithCompanion(BudgetItemsCompanion data) {
+    return BudgetItem(
+      category: data.category.present ? data.category.value : this.category,
+      limitAmount: data.limitAmount.present
+          ? data.limitAmount.value
+          : this.limitAmount,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BudgetItem(')
+          ..write('category: $category, ')
+          ..write('limitAmount: $limitAmount')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(category, limitAmount);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BudgetItem &&
+          other.category == this.category &&
+          other.limitAmount == this.limitAmount);
+}
+
+class BudgetItemsCompanion extends UpdateCompanion<BudgetItem> {
+  final Value<String> category;
+  final Value<double> limitAmount;
+  final Value<int> rowid;
+  const BudgetItemsCompanion({
+    this.category = const Value.absent(),
+    this.limitAmount = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BudgetItemsCompanion.insert({
+    required String category,
+    required double limitAmount,
+    this.rowid = const Value.absent(),
+  }) : category = Value(category),
+       limitAmount = Value(limitAmount);
+  static Insertable<BudgetItem> custom({
+    Expression<String>? category,
+    Expression<double>? limitAmount,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (category != null) 'category': category,
+      if (limitAmount != null) 'limit_amount': limitAmount,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BudgetItemsCompanion copyWith({
+    Value<String>? category,
+    Value<double>? limitAmount,
+    Value<int>? rowid,
+  }) {
+    return BudgetItemsCompanion(
+      category: category ?? this.category,
+      limitAmount: limitAmount ?? this.limitAmount,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (limitAmount.present) {
+      map['limit_amount'] = Variable<double>(limitAmount.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BudgetItemsCompanion(')
+          ..write('category: $category, ')
+          ..write('limitAmount: $limitAmount, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $TransactionItemsTable transactionItems = $TransactionItemsTable(
     this,
   );
+  late final $BudgetItemsTable budgetItems = $BudgetItemsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [transactionItems];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    transactionItems,
+    budgetItems,
+  ];
 }
 
 typedef $$TransactionItemsTableCreateCompanionBuilder =
@@ -704,10 +930,157 @@ typedef $$TransactionItemsTableProcessedTableManager =
       TransactionItem,
       PrefetchHooks Function()
     >;
+typedef $$BudgetItemsTableCreateCompanionBuilder =
+    BudgetItemsCompanion Function({
+      required String category,
+      required double limitAmount,
+      Value<int> rowid,
+    });
+typedef $$BudgetItemsTableUpdateCompanionBuilder =
+    BudgetItemsCompanion Function({
+      Value<String> category,
+      Value<double> limitAmount,
+      Value<int> rowid,
+    });
+
+class $$BudgetItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $BudgetItemsTable> {
+  $$BudgetItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get limitAmount => $composableBuilder(
+    column: $table.limitAmount,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BudgetItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $BudgetItemsTable> {
+  $$BudgetItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get limitAmount => $composableBuilder(
+    column: $table.limitAmount,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BudgetItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BudgetItemsTable> {
+  $$BudgetItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<double> get limitAmount => $composableBuilder(
+    column: $table.limitAmount,
+    builder: (column) => column,
+  );
+}
+
+class $$BudgetItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BudgetItemsTable,
+          BudgetItem,
+          $$BudgetItemsTableFilterComposer,
+          $$BudgetItemsTableOrderingComposer,
+          $$BudgetItemsTableAnnotationComposer,
+          $$BudgetItemsTableCreateCompanionBuilder,
+          $$BudgetItemsTableUpdateCompanionBuilder,
+          (
+            BudgetItem,
+            BaseReferences<_$AppDatabase, $BudgetItemsTable, BudgetItem>,
+          ),
+          BudgetItem,
+          PrefetchHooks Function()
+        > {
+  $$BudgetItemsTableTableManager(_$AppDatabase db, $BudgetItemsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BudgetItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BudgetItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BudgetItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> category = const Value.absent(),
+                Value<double> limitAmount = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BudgetItemsCompanion(
+                category: category,
+                limitAmount: limitAmount,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String category,
+                required double limitAmount,
+                Value<int> rowid = const Value.absent(),
+              }) => BudgetItemsCompanion.insert(
+                category: category,
+                limitAmount: limitAmount,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BudgetItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BudgetItemsTable,
+      BudgetItem,
+      $$BudgetItemsTableFilterComposer,
+      $$BudgetItemsTableOrderingComposer,
+      $$BudgetItemsTableAnnotationComposer,
+      $$BudgetItemsTableCreateCompanionBuilder,
+      $$BudgetItemsTableUpdateCompanionBuilder,
+      (
+        BudgetItem,
+        BaseReferences<_$AppDatabase, $BudgetItemsTable, BudgetItem>,
+      ),
+      BudgetItem,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$TransactionItemsTableTableManager get transactionItems =>
       $$TransactionItemsTableTableManager(_db, _db.transactionItems);
+  $$BudgetItemsTableTableManager get budgetItems =>
+      $$BudgetItemsTableTableManager(_db, _db.budgetItems);
 }

@@ -27,6 +27,20 @@ import 'package:fintrack/features/auth/domain/usecases/register_usecase.dart'
     as _i305;
 import 'package:fintrack/features/auth/presentation/bloc/auth_bloc.dart'
     as _i619;
+import 'package:fintrack/features/budget/data/datasources/budget_local_datasource.dart'
+    as _i113;
+import 'package:fintrack/features/budget/data/repositories/budget_repository_impl.dart'
+    as _i206;
+import 'package:fintrack/features/budget/domain/repositories/budget_repository.dart'
+    as _i341;
+import 'package:fintrack/features/budget/domain/usecases/delete_budget_usecase.dart'
+    as _i464;
+import 'package:fintrack/features/budget/domain/usecases/get_budgets_usecase.dart'
+    as _i274;
+import 'package:fintrack/features/budget/domain/usecases/set_budget_usecase.dart'
+    as _i112;
+import 'package:fintrack/features/budget/presentation/cubit/budget_cubit.dart'
+    as _i497;
 import 'package:fintrack/features/transactions/data/datasources/transaction_local_datasource.dart'
     as _i259;
 import 'package:fintrack/features/transactions/data/datasources/transaction_remote_datasource.dart'
@@ -61,6 +75,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i361.Dio>(() => registerModule.dio);
     gh.singleton<_i90.NetworkInfo>(() => registerModule.networkInfo);
     gh.singleton<_i866.AuthNotifier>(() => registerModule.authNotifier);
+    gh.singleton<_i113.BudgetLocalDataSource>(
+      () => _i113.BudgetLocalDataSourceImpl(gh<_i449.AppDatabase>()),
+    );
     gh.factory<_i621.TransactionRemoteDataSource>(
       () => _i621.TransactionRemoteDataSourceImpl(gh<_i361.Dio>()),
     );
@@ -74,6 +91,11 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i127.AuthRepositoryImpl(
         remoteDataSource: gh<_i88.AuthRemoteDataSource>(),
         networkInfo: gh<_i90.NetworkInfo>(),
+      ),
+    );
+    gh.factory<_i341.BudgetRepository>(
+      () => _i206.BudgetRepositoryImpl(
+        localDataSource: gh<_i113.BudgetLocalDataSource>(),
       ),
     );
     gh.factory<_i471.TransactionRepository>(
@@ -93,6 +115,15 @@ extension GetItInjectableX on _i174.GetIt {
         registerUseCase: gh<_i305.RegisterUseCase>(),
       ),
     );
+    gh.factory<_i112.SetBudgetUseCase>(
+      () => _i112.SetBudgetUseCase(gh<_i341.BudgetRepository>()),
+    );
+    gh.factory<_i274.GetBudgetsUseCase>(
+      () => _i274.GetBudgetsUseCase(gh<_i341.BudgetRepository>()),
+    );
+    gh.factory<_i464.DeleteBudgetUseCase>(
+      () => _i464.DeleteBudgetUseCase(gh<_i341.BudgetRepository>()),
+    );
     gh.factory<_i1048.GetTransactionsUseCase>(
       () => _i1048.GetTransactionsUseCase(gh<_i471.TransactionRepository>()),
     );
@@ -104,6 +135,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i963.UpdateTransactionUseCase>(
       () => _i963.UpdateTransactionUseCase(gh<_i471.TransactionRepository>()),
+    );
+    gh.factory<_i497.BudgetCubit>(
+      () => _i497.BudgetCubit(
+        getBudgetsUseCase: gh<_i274.GetBudgetsUseCase>(),
+        setBudgetUseCase: gh<_i112.SetBudgetUseCase>(),
+        deleteBudgetUseCase: gh<_i464.DeleteBudgetUseCase>(),
+      ),
     );
     gh.factory<_i747.TransactionBloc>(
       () => _i747.TransactionBloc(

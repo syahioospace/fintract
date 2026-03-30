@@ -9,6 +9,7 @@ import '../../features/transactions/domain/entities/transaction.dart';
 import '../../features/transactions/presentation/pages/transactions_page.dart';
 import '../../features/transactions/presentation/pages/add_transaction_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/budget/presentation/pages/budget_page.dart';
 
 import '../../features/auth/presentation/bloc/auth_state.dart';
 import '../di/injection.dart';
@@ -73,6 +74,10 @@ GoRouter createRouter(AuthNotifier authNotifier) {
           final transaction = state.extra as Transaction;
           return AddTransactionPage(transaction: transaction);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.budget,
+        builder: (context, state) => const BudgetPage(),
       ),
       GoRoute(
         path: AppRoutes.dashboard,
