@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../transactions/domain/entities/transaction.dart';
 import '../cubit/budget_cubit.dart';
+import '../../domain/entities/budget.dart';
 
 class BudgetPage extends StatefulWidget {
   const BudgetPage({super.key});
@@ -94,7 +95,8 @@ class _BudgetTile extends StatelessWidget {
   });
 
   final Category category;
-  final dynamic budget;
+  //final dynamic budget;
+  final Budget? budget;
   final VoidCallback onTap;
   final VoidCallback? onDelete;
 
@@ -104,7 +106,7 @@ class _BudgetTile extends StatelessWidget {
       child: ListTile(
         title: Text(category.name),
         subtitle: budget != null
-            ? Text('Limit: \$${budget.limit.toStringAsFixed(2)}')
+            ? Text('Limit: \$${budget?.limit.toStringAsFixed(2)}')
             : const Text('No budget set'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,

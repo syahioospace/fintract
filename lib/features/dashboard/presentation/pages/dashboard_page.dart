@@ -7,6 +7,7 @@ import '../../../transactions/domain/entities/transaction.dart';
 import '../../../transactions/presentation/bloc/transaction_bloc.dart';
 import '../../../transactions/presentation/bloc/transaction_event.dart';
 import '../../../transactions/presentation/bloc/transaction_state.dart';
+import '../../../budget/presentation/cubit/budget_cubit.dart';
 import '../../../../core/theme/theme_cubit.dart';
 import '../../../../core/di/injection.dart';
 
@@ -83,6 +84,12 @@ class _DashboardContent extends StatefulWidget {
 }
 
 class _DashboardContentState extends State<_DashboardContent> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<BudgetCubit>().loadBudgets();
+  }
+
   Category? _selectedCategory;
 
   double get _totalIncome => widget.transactions
@@ -155,6 +162,49 @@ class _DashboardContentState extends State<_DashboardContent> {
               ),
             ]
           )
+        ),
+        const SizedBox(height: 16),
+        BlocBuilder<BudgetCubit, BudgetState>(
+          builder: (context, budgetState) {
+            if (budgetState is! BudgetLoaded) return const SizedBox.shrink();
+            if (budgetState.budgets.isEmpty) return const SizedBox.shrink();
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Budget progress', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                ...budgetState.budgets.map((budget) {
+                  final spent = widget.transactions.where((t) => t.category == budget.category && t.type == TransactionType.expense).fold(0.0, (sum, t) => sum + t.amount);
+                  final progress = (spent / budget.limit).clamp(0.0, 1.0);
+                  final isOver = spent > budget.limit;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(budget.category.name),
+                            Text(
+                              '\$${spent.toStringAsFixed(0)} /\$${budget.limit.toStringAsFixed(0)}',
+                              style: TextStyle(color: isOver ? Colors.red: null),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        LinearProgressIndicator(
+                          value: progress,
+                          color: isOver ? Colors.red : Colors.green,
+                          backgroundColor: Colors.grey.shade200,
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 8),
         if (_filtered.isEmpty)
